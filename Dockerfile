@@ -19,8 +19,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ ./backend/
 COPY frontend/ ./frontend/
 
-# Set OpenShift GID 0 permissions for arbitrary non-root UIDs
-RUN chgrp -R 0 /app && chmod -R g=u /app
+# Pre-create instance directories and set OpenShift GID 0 permissions
+RUN mkdir -p /app/backend/instance /tmp/instance && \
+    chgrp -R 0 /app /tmp/instance && \
+    chmod -R g=u /app /tmp/instance
 
 # Expose backend REST & metrics ports (8080 for OpenShift, 5000 for local Docker)
 EXPOSE 8080 5000

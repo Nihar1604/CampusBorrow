@@ -10,6 +10,9 @@ jobs:
   ci-pipeline:
     name: Lint, Scan, Test & Package
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout code
@@ -42,3 +45,15 @@ jobs:
       - name: Docker Build Verification
         run: |
           docker build -t campusborrow-backend:latest .
+
+      - name: Set Lowercase Repository Owner
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: repo_owner
+        run: echo "owner=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Publish Container Image to GHCR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker tag campusborrow-backend:latest ghcr.io/${{ steps.repo_owner.outputs.owner }}/campusborrow-backend:latest
+          docker push ghcr.io/${{ steps.repo_owner.outputs.owner }}/campusborrow-backend:latest

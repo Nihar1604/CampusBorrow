@@ -19,7 +19,7 @@ spec:
       containers:
         - name: campusborrow-backend
           image: ghcr.io/nihar1604/campusborrow-backend:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080
