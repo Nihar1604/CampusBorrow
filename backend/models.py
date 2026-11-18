@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 
 db = SQLAlchemy()
 
@@ -132,88 +133,96 @@ class BorrowRequest(db.Model):
 def seed_database(app, bcrypt):
     """Seed initial admin, student, and campus resources if database is empty."""
     with app.app_context():
-        # Check if users exist
-        if db.session.query(User).first() is None:
-            admin_user = User(
-                username="admin",
-                email="admin@vit.edu",
-                password_hash=bcrypt.generate_password_hash("Admin@123").decode('utf-8'),
-                is_admin=True,
-                roll_no="FAC-001",
-                department="AIDS"
-            )
-            student_user = User(
-                username="student",
-                email="student@vit.edu",
-                password_hash=bcrypt.generate_password_hash("Student@123").decode('utf-8'),
-                is_admin=False,
-                roll_no="12110543",
-                department="AIDS"
-            )
-            db.session.add_all([admin_user, student_user])
-            db.session.commit()
-            print(" Default users seeded (admin@vit.edu / student@vit.edu).")
-
-        # Check if resources exist
-        if db.session.query(Resource).first() is None:
-            sample_resources = [
-                Resource(
-                    name="ESP32-S3 DevKit",
-                    category="Electronics",
-                    description="Dual-core Xtensa LX7 MCU with Wi-Fi & BLE 5.0 for IoT and embedded ML projects",
-                    location="AI & DS Lab 304",
-                    total_quantity=10,
-                    available_quantity=10,
-                    status="available"
-                ),
-                Resource(
-                    name="DSLR Camera Kit",
-                    category="Club Gear",
-                    description="Canon EOS 1500D with 18-55mm lens and tripod for campus media & club coverage",
-                    location="Central Innovation Hub",
-                    total_quantity=3,
-                    available_quantity=3,
-                    status="available"
-                ),
-                Resource(
-                    name="Oscilloscope Probe Set",
-                    category="Lab Equipment",
-                    description="100MHz 10:1 passive oscilloscope probe with ground lead and IC test clips",
-                    location="Instrumentation Lab 202",
-                    total_quantity=8,
-                    available_quantity=8,
-                    status="available"
-                ),
-                Resource(
-                    name="Arduino Sensor Kit",
-                    category="Electronics",
-                    description="37-in-1 modular sensor kit including ultrasonic, IR, gas, flame, and DHT11 sensors",
-                    location="AI & DS Lab 304",
-                    total_quantity=15,
-                    available_quantity=15,
-                    status="available"
-                ),
-                Resource(
-                    name="Raspberry Pi 4 Model B (8GB)",
-                    category="Electronics",
-                    description="Quad-core Cortex-A72 with 8GB RAM for edge computing, robotics & computer vision",
-                    location="Robotics & Automation Lab",
-                    total_quantity=6,
-                    available_quantity=6,
-                    status="available"
-                ),
-                Resource(
-                    name="NVIDIA Jetson Nano Dev Kit",
-                    category="Lab Equipment",
-                    description=(
-                        "128-core Maxwell GPU board for real-time edge AI inference and deep learning pipelines"
-                    ),
-                    location="AI & DS Lab 304",
-                    total_quantity=4,
-                    available_quantity=4,
-                    status="available"
+        try:
+            if not User.query.filter_by(email="admin@vit.edu").first():
+                admin = User(
+                    username="admin",
+                    email="admin@vit.edu",
+                    password_hash=bcrypt.generate_password_hash("Admin@123").decode("utf-8"),
+                    is_admin=True,
+                    roll_no="FAC-001",
+                    department="AIDS",
                 )
-            ]
-            db.session.add_all(sample_resources)
+                db.session.add(admin)
+
+            if not User.query.filter_by(email="student@vit.edu").first():
+                student = User(
+                    username="student",
+                    email="student@vit.edu",
+                    password_hash=bcrypt.generate_password_hash("Student@123").decode("utf-8"),
+                    is_admin=False,
+                    roll_no="12412803",
+                    department="AIDS",
+                )
+                db.session.add(student)
+
             db.session.commit()
-            print(" 6 initial campus resources seeded.")
+        except IntegrityError:
+            db.session.rollback()
+
+        if Resource.query.count() == 0:
+            try:
+                sample_resources = [
+                    Resource(
+                        name="ESP32-S3 DevKit",
+                        category="Electronics",
+                        description="Dual-core Xtensa LX7 MCU with Wi-Fi & BLE 5.0 for IoT and embedded ML projects",
+                        location="AI & DS Lab 304",
+                        total_quantity=10,
+                        available_quantity=10,
+                        status="available"
+                    ),
+                    Resource(
+                        name="DSLR Camera Kit",
+                        category="Club Gear",
+                        description="Canon EOS 1500D with 18-55mm lens and tripod for campus media & club coverage",
+                        location="Central Innovation Hub",
+                        total_quantity=3,
+                        available_quantity=3,
+                        status="available"
+                    ),
+                    Resource(
+                        name="Oscilloscope Probe Set",
+                        category="Lab Equipment",
+                        description="100MHz 10:1 passive oscilloscope probe with ground lead and IC test clips",
+                        location="Instrumentation Lab 202",
+                        total_quantity=8,
+                        available_quantity=8,
+                        status="available"
+                    ),
+                    Resource(
+                        name="Arduino Sensor Kit",
+                        category="Electronics",
+                        description=(
+                            "37-in-1 modular sensor kit including ultrasonic, IR, gas, flame, and DHT11 sensors"
+                        ),
+                        location="AI & DS Lab 304",
+                        total_quantity=15,
+                        available_quantity=15,
+                        status="available"
+                    ),
+                    Resource(
+                        name="Raspberry Pi 4 Model B (8GB)",
+                        category="Electronics",
+                        description="Quad-core Cortex-A72 with 8GB RAM for edge computing, robotics & computer vision",
+                        location="Robotics & Automation Lab",
+                        total_quantity=6,
+                        available_quantity=6,
+                        status="available"
+                    ),
+                    Resource(
+                        name="NVIDIA Jetson Nano Dev Kit",
+                        category="Lab Equipment",
+                        description=(
+                            "128-core Maxwell GPU board for real-time edge AI inference and deep learning pipelines"
+                        ),
+                        location="AI & DS Lab 304",
+                        total_quantity=4,
+                        available_quantity=4,
+                        status="available"
+                    )
+                ]
+                db.session.add_all(sample_resources)
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()

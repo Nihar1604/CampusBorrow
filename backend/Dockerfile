@@ -30,10 +30,11 @@ EXPOSE 8080 5000
 ENV FLASK_ENV=production
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8080
+ENV HOME=/tmp
 
 # Container healthcheck aligned with Kubernetes/OpenShift readiness
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:${PORT:-8080}/api/health || exit 1
 
 # Start CampusBorrow application via Gunicorn WSGI server
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8080} --workers 2 --threads 4 app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--threads", "4", "--no-control-socket", "app:app"]
