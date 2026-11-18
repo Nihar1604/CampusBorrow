@@ -78,7 +78,8 @@ class BorrowRequest(db.Model):
     borrow_date = db.Column(db.DateTime, default=utc_now, nullable=False)
     due_date = db.Column(db.DateTime, nullable=False)
     return_date = db.Column(db.DateTime, nullable=True)
-    status = db.Column(db.String(30), default="pending", nullable=False)  # "pending", "approved", "rejected", "returned", "overdue"
+    # Status: "pending", "approved", "rejected", "returned", "overdue"
+    status = db.Column(db.String(30), default="pending", nullable=False)
     admin_remarks = db.Column(db.String(255), nullable=True)
 
     # Relationships
@@ -204,7 +205,9 @@ def seed_database(app, bcrypt):
                 Resource(
                     name="NVIDIA Jetson Nano Dev Kit",
                     category="Lab Equipment",
-                    description="128-core Maxwell GPU board for real-time edge AI inference and deep learning pipelines",
+                    description=(
+                        "128-core Maxwell GPU board for real-time edge AI inference and deep learning pipelines"
+                    ),
                     location="AI & DS Lab 304",
                     total_quantity=4,
                     available_quantity=4,

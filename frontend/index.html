@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,8 +8,10 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
 </head>
+
 <body>
   <!-- Header / Navigation Bar -->
   <header class="app-header">
@@ -35,7 +38,11 @@
             <span class="user-meta" id="user-display-meta">Roll: 12110543 • AIDS</span>
           </div>
           <button class="btn btn-outline-danger btn-sm" onclick="logout()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
             Logout
           </button>
         </div>
@@ -73,7 +80,8 @@
           <form onsubmit="handleLogin(event)">
             <div class="form-group">
               <label for="login-identifier">Username or VIT Email</label>
-              <input type="text" id="login-identifier" class="form-control" placeholder="e.g. student@vit.edu or student" required />
+              <input type="text" id="login-identifier" class="form-control"
+                placeholder="e.g. student@vit.edu or student" required />
             </div>
 
             <div class="form-group">
@@ -87,8 +95,10 @@
           <div class="demo-helpers">
             <span class="helper-label">Demo Credentials:</span>
             <div class="demo-chips">
-              <span class="demo-chip" onclick="fillDemoCredentials('student')">Student: <code>student@vit.edu</code> / <code>Student@123</code></span>
-              <span class="demo-chip" onclick="fillDemoCredentials('admin')">Admin: <code>admin@vit.edu</code> / <code>Admin@123</code></span>
+              <span class="demo-chip" onclick="fillDemoCredentials('student')">Student: <code>student@vit.edu</code> /
+                <code>Student@123</code></span>
+              <span class="demo-chip" onclick="fillDemoCredentials('admin')">Admin: <code>admin@vit.edu</code> /
+                <code>Admin@123</code></span>
             </div>
           </div>
         </div>
@@ -129,7 +139,8 @@
               </div>
               <div class="form-group">
                 <label for="reg-password">Password *</label>
-                <input type="password" id="reg-password" class="form-control" placeholder="Minimum 6 characters" required />
+                <input type="password" id="reg-password" class="form-control" placeholder="Minimum 6 characters"
+                  required />
               </div>
             </div>
 
@@ -146,15 +157,23 @@
       <!-- Top Navigation Tabs -->
       <nav class="portal-nav">
         <button id="nav-catalog-btn" class="nav-tab active" onclick="switchPortalTab('catalog')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
           Campus Catalog
         </button>
         <button id="nav-myborrows-btn" class="nav-tab" onclick="switchPortalTab('myborrows')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
           My Borrowings <span id="my-borrows-count-badge" class="pill-count">0</span>
         </button>
         <button id="nav-admin-btn" class="nav-tab hidden" onclick="switchPortalTab('admin')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
           Admin Console
         </button>
       </nav>
@@ -163,8 +182,13 @@
       <section id="tab-catalog" class="portal-tab-content">
         <div class="content-toolbar">
           <div class="search-box">
-            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" id="catalog-search-input" placeholder="Search devices, sensors, kits, or lab locations..." oninput="debounceSearch()" />
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="catalog-search-input"
+              placeholder="Search devices, sensors, kits, or lab locations..." oninput="debounceSearch()" />
           </div>
 
           <div class="category-filter-pills" id="category-filter-group">
@@ -190,7 +214,11 @@
             <p class="section-desc">Track active loans, pending approvals, and return checked-out campus equipment</p>
           </div>
           <button class="btn btn-outline btn-sm" onclick="loadMyBorrows()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
             Refresh
           </button>
         </div>
@@ -210,7 +238,9 @@
               </tr>
             </thead>
             <tbody id="my-borrows-table-body">
-              <tr><td colspan="8" class="text-center py-4 text-muted">No borrowing records found.</td></tr>
+              <tr>
+                <td colspan="8" class="text-center py-4 text-muted">No borrowing records found.</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -222,7 +252,11 @@
         <div class="kpi-grid">
           <div class="kpi-card">
             <div class="kpi-icon bg-blue-subtle">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
             </div>
             <div class="kpi-info">
               <span class="kpi-label">Total Equipment Units</span>
@@ -232,7 +266,9 @@
 
           <div class="kpi-card">
             <div class="kpi-icon bg-green-subtle">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
             </div>
             <div class="kpi-info">
               <span class="kpi-label">Available In Stock</span>
@@ -242,7 +278,11 @@
 
           <div class="kpi-card">
             <div class="kpi-icon bg-amber-subtle">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
             </div>
             <div class="kpi-info">
               <span class="kpi-label">Pending Requests</span>
@@ -252,7 +292,10 @@
 
           <div class="kpi-card">
             <div class="kpi-icon bg-red-subtle">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
             </div>
             <div class="kpi-info">
               <span class="kpi-label">Overdue Returns</span>
@@ -287,7 +330,9 @@
                 </tr>
               </thead>
               <tbody id="admin-borrows-table-body">
-                <tr><td colspan="9" class="text-center py-4 text-muted">No student requests in queue.</td></tr>
+                <tr>
+                  <td colspan="9" class="text-center py-4 text-muted">No student requests in queue.</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -318,7 +363,9 @@
                 </tr>
               </thead>
               <tbody id="admin-inventory-table-body">
-                <tr><td colspan="8" class="text-center py-4 text-muted">Loading inventory items...</td></tr>
+                <tr>
+                  <td colspan="8" class="text-center py-4 text-muted">Loading inventory items...</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -340,7 +387,7 @@
       </div>
       <form onsubmit="handleBorrowSubmit(event)">
         <input type="hidden" id="modal-borrow-resource-id" />
-        
+
         <div class="form-group">
           <label>Resource Item</label>
           <input type="text" id="modal-borrow-resource-name" class="form-control" readonly />
@@ -365,7 +412,8 @@
 
         <div class="form-group">
           <label for="modal-borrow-purpose">Academic Purpose / Project *</label>
-          <input type="text" id="modal-borrow-purpose" class="form-control" placeholder="e.g. PEC2 Project Prototype / Hackathon Build" required />
+          <input type="text" id="modal-borrow-purpose" class="form-control"
+            placeholder="e.g. PEC2 Project Prototype / Hackathon Build" required />
         </div>
 
         <div class="modal-actions">
@@ -386,7 +434,8 @@
       <form onsubmit="handleAddResourceSubmit(event)">
         <div class="form-group">
           <label for="modal-res-name">Item / Resource Name *</label>
-          <input type="text" id="modal-res-name" class="form-control" placeholder="e.g. FPGA Spartan-7 Board" required />
+          <input type="text" id="modal-res-name" class="form-control" placeholder="e.g. FPGA Spartan-7 Board"
+            required />
         </div>
 
         <div class="form-row">
@@ -407,7 +456,8 @@
 
         <div class="form-group">
           <label for="modal-res-desc">Description</label>
-          <textarea id="modal-res-desc" class="form-control" rows="2" placeholder="Specifications, model info, components included..."></textarea>
+          <textarea id="modal-res-desc" class="form-control" rows="2"
+            placeholder="Specifications, model info, components included..."></textarea>
         </div>
 
         <div class="form-row">
@@ -444,7 +494,8 @@
         <input type="hidden" id="modal-reject-borrow-id" />
         <div class="form-group">
           <label for="modal-reject-remarks-text">Admin Reason / Remarks (Optional)</label>
-          <textarea id="modal-reject-remarks-text" class="form-control" rows="3" placeholder="e.g. Device reserved for university accreditation inspection."></textarea>
+          <textarea id="modal-reject-remarks-text" class="form-control" rows="3"
+            placeholder="e.g. Device reserved for university accreditation inspection."></textarea>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn btn-outline" onclick="closeModal('modal-reject-remarks')">Cancel</button>
@@ -463,4 +514,5 @@
 
   <script src="script.js"></script>
 </body>
+
 </html>

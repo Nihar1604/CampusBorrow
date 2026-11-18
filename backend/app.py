@@ -12,30 +12,21 @@ from routes import init_routes, bcrypt
 load_dotenv()
 
 
-def create_app(test_config=None):
+def _resolve_frontend_dir():
     frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend'))
     if not os.path.isdir(frontend_dir):
         frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'frontend'))
+    return frontend_dir
 
-    app = Flask(__name__, static_folder=frontend_dir)
 
-    # Database Configuration
-    database_url = os.getenv("DATABASE_URL")
-    if database_url and database_url.startswith("postgres://"):
-        database_url = database_url.replace("postgres://", "postgresql://", 1)
+def _get_database_uri():
+    db_url = os.getenv("DATABASE_URL")
+    if db_url and db_url.startswith("postgres://"):
+        return db_url.replace("postgres://", "postgresql://", 1)
+    return db_url or "sqlite:///campusborrow.db"
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_url or "sqlite:///campusborrow.db"
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['JWT_SECRET_KEY'] = os.getenv("SECRET_KEY", "campusborrow-dev-secret-key-vit-2026")
-    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
 
-    if test_config:
-        app.config.update(test_config)
-
-    # Initialize CORS
-    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
-
-    # Initialize Talisman (Security Headers & DevSecOps)
+def _configure_security(app):
     csp = {
         'default-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https:", "data:"],
         'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
@@ -51,7 +42,8 @@ def create_app(test_config=None):
         frame_options='SAMEORIGIN'
     )
 
-    # Initialize Prometheus Metrics for Observability
+
+def _configure_metrics(app):
     if app.config.get('TESTING'):
         from prometheus_client import CollectorRegistry
         metric_registry = CollectorRegistry(auto_describe=True)
@@ -64,12 +56,10 @@ def create_app(test_config=None):
         metrics.info('campusborrow_info', 'CampusBorrow Portal info', version='1.0.0')
     except Exception:
         pass
+    return metrics
 
-    # Initialize Database and Routes
-    db.init_app(app)
-    init_routes(app)
 
-    # DevSecOps & Observability Health Check
+def _register_static_routes(app, frontend_dir):
     @app.route('/api/health', methods=['GET'])
     def health_check():
         return jsonify({
@@ -77,7 +67,6 @@ def create_app(test_config=None):
             "service": "campusborrow-backend"
         }), 200
 
-    # Serve Frontend Single Page App / Static Assets
     @app.route('/')
     def index():
         if os.path.exists(os.path.join(frontend_dir, 'index.html')):
@@ -95,7 +84,27 @@ def create_app(test_config=None):
                 return send_from_directory(frontend_dir, 'index.html')
         return jsonify({"error": "Not found"}), 404
 
-    # Seed Database on initial run if not in test mode
+
+def create_app(test_config=None):
+    frontend_dir = _resolve_frontend_dir()
+    app = Flask(__name__, static_folder=frontend_dir)
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = _get_database_uri()
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['JWT_SECRET_KEY'] = os.getenv("SECRET_KEY", "campusborrow-dev-secret-key-vit-2026")
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
+
+    if test_config:
+        app.config.update(test_config)
+
+    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+    _configure_security(app)
+    _configure_metrics(app)
+
+    db.init_app(app)
+    init_routes(app)
+    _register_static_routes(app, frontend_dir)
+
     if not app.config.get('TESTING'):
         with app.app_context():
             db.create_all()
@@ -112,4 +121,7 @@ if __name__ == '__main__':
         seed_database(app, bcrypt)
         print(" CampusBorrow tables created & verified.")
         print(" Using DB:", app.config["SQLALCHEMY_DATABASE_URI"])
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    debug_mode = os.getenv("FLASK_DEBUG", "false").lower() in ("true", "1")
+    host_addr = os.getenv("FLASK_HOST", "0.0.0.0")  # nosec B104
+    port_num = int(os.getenv("PORT", "5000"))
+    app.run(debug=debug_mode, host=host_addr, port=port_num)

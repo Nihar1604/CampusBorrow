@@ -6,9 +6,9 @@ import pytest
 # Ensure backend directory is in the import path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'backend')))
 
-from app import create_app
-from models import db, User, Resource, BorrowRequest, seed_database
-from routes import bcrypt
+from app import create_app  # noqa: E402
+from models import db, User, Resource, BorrowRequest, seed_database  # noqa: E402
+from routes import bcrypt  # noqa: E402
 
 
 @pytest.fixture
@@ -26,6 +26,7 @@ def app():
         yield test_app
         db.session.remove()
         db.drop_all()
+        db.engine.dispose()
 
 
 @pytest.fixture
