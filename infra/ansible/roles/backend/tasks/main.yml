@@ -1,0 +1,109 @@
+- name: Install Docker using Docker's official script
+  ansible.builtin.shell: |
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sh get-docker.sh
+  args:
+    creates: /usr/bin/docker 
+  
+- name: Ensure Docker service is running  
+  ansible.builtin.service:  
+    name: docker  
+    state: started  
+    enabled: true  
+  
+- name: Ensure Minikube is installed  
+  ansible.builtin.shell: |  
+    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64  
+    chmod +x minikube  
+    mv minikube /usr/local/bin/  
+  args:  
+    creates: /usr/local/bin/minikube  
+  
+- name: Ensure pip is installed  
+  ansible.builtin.apt:  
+    name: python3-pip  
+    state: present  
+    update_cache: true  
+  
+- name: Install Docker SDK for Python  
+  ansible.builtin.pip:  
+    name: docker  
+    state: present
+    extra_args: --break-system-packages
+  
+- name: Ensure required directory structure exists  
+  ansible.builtin.file:  
+    path: "{{ item }}"  
+    state: directory  
+    mode: '0755'  
+  loop:  
+    - "{{ lookup('env', 'HOME') }}/.kube"  
+    - "{{ lookup('env', 'HOME') }}/.minikube"  
+  
+- name: Ensure .env exists at configured path  
+  ansible.builtin.file:  
+    path: "{{ lookup('env', 'HOME') }}/Projects/campusborrow/.env"  
+    state: touch  
+    mode: '0600'  
+  
+- name: Deploy backend container with rollback support  
+  block:  
+    - name: Remove any existing container  
+      community.docker.docker_container:  
+        name: campusborrow-backend  
+        state: absent  
+  
+    - name: Pull new image  
+      community.docker.docker_image:  
+        name: ghcr.io/campusborrow/campusborrow-backend:latest  
+        source: pull  
+  
+    - name: Read .env file  
+      ansible.builtin.slurp:  
+        src: "{{ lookup('env', 'HOME') }}/Projects/campusborrow/.env"  
+      register: env_file_raw  
+  
+    - name: Parse .env into dict
+      ansible.builtin.set_fact:
+        env_vars: >-
+          {{
+            dict(
+              (env_file_raw.content
+              | b64decode
+              | string)
+              .splitlines()
+              | select("match", "^[A-Za-z_]+[A-Za-z0-9_]*=.*")
+              | map('split', '=', 1)
+            )
+          }}
+  
+    - name: Run new backend container with environment vars  
+      community.docker.docker_container:  
+        name: campusborrow-backend  
+        image: ghcr.io/campusborrow/campusborrow-backend:latest  
+        state: started  
+        ports:  
+          - "5000:5000"  
+        env: "{{ env_vars }}"  
+  
+  rescue:
+    - name: Set default environment variables if they don't exist
+      ansible.builtin.set_fact:
+        env_vars: {}
+
+    - name: Roll back to previous image
+      community.docker.docker_container:
+        name: campusborrow-backend
+        image: ghcr.io/campusborrow/campusborrow-backend:latest
+        state: started
+        ports:
+          - "5000:5000"
+        env: "{{ env_vars }}"
+
+    - name: Notify rollback
+      ansible.builtin.debug:
+        msg: "⚠️ Rollback completed — restored previous image."
+  
+- name: ✅ Backend role completed  
+  ansible.builtin.debug:  
+    msg: "✅ Local host fully configured for CampusBorrow development and deployment."

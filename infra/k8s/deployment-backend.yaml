@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: campusborrow-backend
+  namespace: campusborrow
+  labels:
+    app: campusborrow-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: campusborrow-backend
+  template:
+    metadata:
+      labels:
+        app: campusborrow-backend
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/campusborrow/campusborrow-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+              name: http
+          envFrom:
+            - configMapRef:
+                name: campusborrow-config
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

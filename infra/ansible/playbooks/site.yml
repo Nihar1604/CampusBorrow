@@ -1,0 +1,6 @@
+- hosts: local
+  become: true
+  vars:
+    env_file_path: "{{ lookup('env', 'HOME') }}/Projects/campusborrow/.env"
+  roles:
+    - backend

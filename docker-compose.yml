@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: campusborrow-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://admin:admin123@db:5432/campusborrow
+      - SECRET_KEY=campusborrow-secret-vit-pune-2026
+      - FORCE_HTTPS=false
+      - FLASK_ENV=production
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: campusborrow-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    container_name: campusborrow-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: campusborrow
+    ports:
+      - "5432:5432"
+    volumes:
+      - campusborrow-pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  campusborrow-pgdata:

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: campusborrow-config
+  namespace: campusborrow
+data:
+  DATABASE_URL: "postgresql://admin:admin123@postgres-service:5432/campusborrow"
+  SECRET_KEY: "campusborrow-production-secret-vit-pune-2026"
+  FORCE_HTTPS: "false"
+  FLASK_ENV: "production"
