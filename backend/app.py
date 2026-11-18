@@ -23,11 +23,7 @@ def _get_database_uri():
     db_url = os.getenv("DATABASE_URL")
     if db_url and db_url.startswith("postgres://"):
         return db_url.replace("postgres://", "postgresql://", 1)
-    if db_url:
-        return db_url
-    if os.path.isdir("/tmp"):  # nosec B108
-        return "sqlite:////tmp/campusborrow.db"  # nosec B108
-    return "sqlite:///campusborrow.db"
+    return db_url or "sqlite:////tmp/campusborrow.db"  # nosec B108
 
 
 def _configure_security(app):
@@ -90,8 +86,14 @@ def _register_static_routes(app, frontend_dir):
 
 
 def create_app(test_config=None):
+    instance_dir = os.path.abspath("/tmp/instance")  # nosec B108
+    os.makedirs(instance_dir, exist_ok=True)
     frontend_dir = _resolve_frontend_dir()
-    app = Flask(__name__, static_folder=frontend_dir)
+    app = Flask(
+        __name__,
+        instance_path=instance_dir,
+        static_folder=frontend_dir
+    )
 
     app.config['SQLALCHEMY_DATABASE_URI'] = _get_database_uri()
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

@@ -20,7 +20,7 @@ COPY backend/ ./backend/
 COPY frontend/ ./frontend/
 
 # Set OpenShift GID 0 permissions for arbitrary non-root UIDs
-RUN chgrp -R 0 /app && chmod -R g+rwX /app
+RUN chgrp -R 0 /app && chmod -R g=u /app
 
 # Expose backend REST & metrics ports (8080 for OpenShift, 5000 for local Docker)
 EXPOSE 8080 5000
