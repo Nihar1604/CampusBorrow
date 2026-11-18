@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: campusborrow
+  labels:
+    app: campusborrow
+    app.kubernetes.io/name: campusborrow
+    app.kubernetes.io/part-of: campusborrow-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: campusborrow
+  template:
+    metadata:
+      labels:
+        app: campusborrow
+    spec:
+      containers:
+        - name: campusborrow-backend
+          image: ghcr.io/nihar1604/campusborrow-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: FLASK_ENV
+              value: "production"
+            - name: FORCE_HTTPS
+              value: "false"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: campusborrow-svc
+  labels:
+    app: campusborrow
+    app.kubernetes.io/name: campusborrow
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  selector:
+    app: campusborrow
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: campusborrow-route
+  labels:
+    app: campusborrow
+    app.kubernetes.io/name: campusborrow
+spec:
+  to:
+    kind: Service
+    name: campusborrow-svc
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

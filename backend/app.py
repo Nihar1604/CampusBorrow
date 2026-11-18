@@ -23,7 +23,11 @@ def _get_database_uri():
     db_url = os.getenv("DATABASE_URL")
     if db_url and db_url.startswith("postgres://"):
         return db_url.replace("postgres://", "postgresql://", 1)
-    return db_url or "sqlite:///campusborrow.db"
+    if db_url:
+        return db_url
+    if os.path.isdir("/tmp"):  # nosec B108
+        return "sqlite:////tmp/campusborrow.db"  # nosec B108
+    return "sqlite:///campusborrow.db"
 
 
 def _configure_security(app):
@@ -123,5 +127,5 @@ if __name__ == '__main__':
         print(" Using DB:", app.config["SQLALCHEMY_DATABASE_URI"])
     debug_mode = os.getenv("FLASK_DEBUG", "false").lower() in ("true", "1")
     host_addr = os.getenv("FLASK_HOST", "0.0.0.0")  # nosec B104
-    port_num = int(os.getenv("PORT", "5000"))
+    port_num = int(os.getenv("PORT", os.getenv("FLASK_PORT", "8080")))
     app.run(debug=debug_mode, host=host_addr, port=port_num)

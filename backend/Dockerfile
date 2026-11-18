@@ -18,16 +18,20 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend source files
 COPY . .
 
-# Expose backend REST & metrics port
-EXPOSE 5000
+# Set OpenShift GID 0 permissions for arbitrary non-root UIDs
+RUN chgrp -R 0 /app && chmod -R g+rwX /app
+
+# Expose backend REST & metrics ports (8080 for OpenShift, 5000 for local Docker)
+EXPOSE 8080 5000
 
 # Set production environment flags
 ENV FLASK_ENV=production
 ENV PYTHONUNBUFFERED=1
+ENV PORT=8080
 
-# Container healthcheck aligned with Kubernetes readiness/liveness
+# Container healthcheck aligned with Kubernetes/OpenShift readiness
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:5000/api/health || exit 1
+  CMD curl -f http://localhost:${PORT:-8080}/api/health || exit 1
 
-# Start CampusBorrow application
-CMD ["python", "app.py"]
+# Start CampusBorrow application via Gunicorn WSGI server
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8080} --workers 2 --threads 4 app:app"]
