@@ -87,13 +87,17 @@ def _register_static_routes(app, frontend_dir):
 
 def create_app(test_config=None):
     instance_dir = os.path.abspath("/tmp/instance")  # nosec B108
-    os.makedirs(instance_dir, exist_ok=True)
+    try:
+        os.makedirs(instance_dir, exist_ok=True)
+    except OSError:
+        pass
     frontend_dir = _resolve_frontend_dir()
     app = Flask(
         __name__,
         instance_path=instance_dir,
         static_folder=frontend_dir
     )
+    app.instance_path = instance_dir
 
     app.config['SQLALCHEMY_DATABASE_URI'] = _get_database_uri()
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
